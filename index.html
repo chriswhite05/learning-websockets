@@ -3,6 +3,12 @@
 <head>
 <title>Accelerometer Javascript Test</title>
 <meta name="viewport" content="width=device-width,user-scalable=yes" />
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+</script>
+
 <style>
 body {
 	font-family: helvetica, arial, sans serif;
@@ -34,6 +40,9 @@ body {
 test: <span id="test"></span>
 </div>
 <script type="text/javascript">
+
+
+
 
 var x = 0, y = 0,
     vx = 0, vy = 0,
@@ -72,11 +81,45 @@ if (window.DeviceMotionEvent != undefined) {
 		
 		boundingBoxCheck();
 		
-		sphere.style.top = y + "px";
-		sphere.style.left = x + "px";
+		//sphere.style.top = y + "px";
+		    
+		///socket.emit('sphere y', y );
+
+		//sphere.style.left = x + "px";
+		
+		//socket.emit('sphere x', x );
+
+
+
 		
 	}, 25);
-} 
+	
+	
+	
+	document.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    var touch = e.touches[0];
+    
+    var widthPercent = ( touch.pageX / (window.innerWidth-20) ) * 100;
+    var heightPercent = ( touch.pageY / (window.innerHeight-20) ) * 100;
+    sphere.style.top = heightPercent + "%";
+    sphere.style.left = widthPercent + "%";
+    
+    
+    socket.emit('sphere y', heightPercent );
+    socket.emit('sphere x', widthPercent );
+    
+}, false);
+	
+} else {
+  socket.on('sphere y', function(yPos){
+    sphere.style.top = yPos + "%";
+  });
+
+  socket.on('sphere x', function(xPos){
+    sphere.style.left = xPos + "%";
+  });   
+}
 
 
 function boundingBoxCheck(){
@@ -88,6 +131,8 @@ function boundingBoxCheck(){
 }
 
 </script>
+
+
 
 </body>
 </html>
